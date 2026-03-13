@@ -1,26 +1,63 @@
 @import "tailwindcss";
+@import "@fontsource/zen-maru-gothic/400.css";
+@import "@fontsource/zen-maru-gothic/700.css";
+@import "@fontsource-variable/nunito";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-cream: #FFF8F0;
+  --color-coral: #FF9A8B;
+  --color-coral-dark: #E8837A;
+  --color-sky: #A8D8EA;
+  --color-peach: #FFD3B6;
+  --color-mint: #B5EAD7;
+  --color-lavender: #B19CD9;
+  --color-text: #4A4A4A;
+  --color-text-sub: #9B9B9B;
+  --color-border: #F0E6D8;
+  --color-surface: #FFFFFF;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-cream: var(--color-cream);
+  --color-coral: var(--color-coral);
+  --color-coral-dark: var(--color-coral-dark);
+  --color-sky: var(--color-sky);
+  --color-peach: var(--color-peach);
+  --color-mint: var(--color-mint);
+  --color-lavender: var(--color-lavender);
+  --color-text: var(--color-text);
+  --color-text-sub: var(--color-text-sub);
+  --color-border: var(--color-border);
+  --color-surface: var(--color-surface);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: "Nunito Variable", "Zen Maru Gothic", sans-serif;
+  --font-jp: "Zen Maru Gothic", sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+/* Spot icon colors */
+.spot-shrine { color: #FF6B6B; }
+.spot-temple { color: #C9A96E; }
+.spot-food { color: #FFB347; }
+.spot-cafe { color: #A0826D; }
+.spot-shopping { color: #B19CD9; }
+.spot-nature { color: #77DD77; }
+.spot-museum { color: #7EC8E3; }
+.spot-hotel { color: #FF9A8B; }
+.spot-station { color: #9B9B9B; }
+.spot-photo { color: #FFD700; }
+.spot-other { color: #A8D8EA; }
+
+/* Hide scrollbar for horizontal scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
