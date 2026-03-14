@@ -13,6 +13,7 @@ import { TimelineTree } from "@/components/timeline/TimelineTree";
 import { SpotForm, SpotFormData } from "@/components/timeline/SpotForm";
 import { TripHeader } from "@/components/trip/TripHeader";
 import { ShareModal } from "@/components/trip/ShareModal";
+import { SnsShareModal } from "@/components/trip/SnsShareModal";
 import { OnlineUsers } from "@/components/trip/OnlineUsers";
 import { Modal } from "@/components/ui/Modal";
 
@@ -30,6 +31,7 @@ export default function TripPage() {
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState("");
   const [showShare, setShowShare] = useState(false);
+  const [showSnsShare, setShowSnsShare] = useState(false);
 
   const getStorageAdapter = useCallback(() => {
     if (user) return getStorage(createClient());
@@ -55,7 +57,11 @@ export default function TripPage() {
     );
   }
 
-  const handleSpotClick = (spot: Spot) => {
+  const handleSpotClick = (_spot: Spot) => {
+    // ピンタップ時は名前表示のみ（PrefectureMap内でラベルトグル）
+  };
+
+  const handleEditSpot = (spot: Spot) => {
     setEditingSpot(spot);
     setShowSpotForm(true);
   };
@@ -165,6 +171,7 @@ export default function TripPage() {
         trip={trip}
         onEditName={handleEditName}
         onShare={() => setShowShare(true)}
+        onSnsShare={() => setShowSnsShare(true)}
         onlineUsers={onlineUsers}
       />
 
@@ -190,7 +197,7 @@ export default function TripPage() {
             activeDay={activeDay}
             onActiveDayChange={setActiveDay}
             onReorder={reorderSpots}
-            onEditSpot={handleSpotClick}
+            onEditSpot={handleEditSpot}
             onDeleteSpot={handleDeleteSpotDirect}
             onAddClick={handleAddClick}
             onAddDay={handleAddDay}
@@ -274,6 +281,14 @@ export default function TripPage() {
         tripId={tripId}
         isOpen={showShare}
         onClose={() => setShowShare(false)}
+      />
+
+      {/* SNS Share Modal */}
+      <SnsShareModal
+        trip={trip}
+        isOpen={showSnsShare}
+        onClose={() => setShowSnsShare(false)}
+        onUpdate={refresh}
       />
     </div>
   );

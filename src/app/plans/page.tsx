@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, ChevronLeft } from "lucide-react";
 import { useTrips } from "@/lib/hooks/useTrips";
+import { createClient } from "@/lib/supabase/client";
 import { TripCard } from "@/components/trip/TripCard";
 import { Modal } from "@/components/ui/Modal";
 import { PrefectureSelector } from "@/components/prefecture/PrefectureSelector";
@@ -13,7 +14,7 @@ import { Button } from "@/components/ui/Button";
 
 export default function PlansPage() {
   const router = useRouter();
-  const { trips, loading, createTrip, deleteTrip } = useTrips();
+  const { trips, loading, createTrip, deleteTrip, updateTrip } = useTrips();
   const [showCreate, setShowCreate] = useState(false);
   const [selectedPrefecture, setSelectedPrefecture] = useState<number | null>(null);
   const [selectedSubRegion, setSelectedSubRegion] = useState<string | undefined>(undefined);
@@ -44,6 +45,24 @@ export default function PlansPage() {
     if (window.confirm("このプランを削除しますか？")) {
       await deleteTrip(id);
     }
+  };
+
+  const handleUploadImage = async (tripId: string, file: File) => {
+    const supabase = createClient();
+    const ext = file.name.split(".").pop() || "png";
+    const filePath = `${tripId}/cover_${Date.now()}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from("trip-covers")
+      .upload(filePath, file, { upsert: true });
+
+    if (error) throw error;
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("trip-covers").getPublicUrl(filePath);
+
+    await updateTrip(tripId, { coverImageUrl: `${publicUrl}?t=${Date.now()}` });
   };
 
   return (
@@ -83,6 +102,7 @@ export default function PlansPage() {
                 trip={trip}
                 onClick={() => router.push(`/trip/${trip.id}`)}
                 onDelete={() => handleDelete(trip.id)}
+                onUploadImage={(file) => handleUploadImage(trip.id, file)}
               />
             ))}
           </AnimatePresence>

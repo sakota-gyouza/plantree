@@ -67,7 +67,7 @@ export function FriendSearch({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            placeholder="メールアドレスまたは名前で検索"
+            placeholder="フレンドIDで検索"
             className="w-full pl-9 pr-4 py-2.5 bg-cream border-2 border-border rounded-xl text-sm text-text placeholder:text-text-sub/50 focus:outline-none focus:border-coral transition-colors"
           />
         </div>

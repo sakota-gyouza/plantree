@@ -69,7 +69,7 @@ export function TimelineItem({
       style={style}
       className={`${isDragging ? "opacity-50 z-50" : ""}`}
     >
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-border/40">
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden border-2 border-peach/60">
         {/* Top row: drag | icon+name+time | edit, delete */}
         <div className="flex items-center gap-1 pr-1.5">
           <div

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { TreePine, List, LogOut, Users } from "lucide-react";
+import { TreePine, List, LogOut, Users, Camera, MessageCircle } from "lucide-react";
 import { useTrips } from "@/lib/hooks/useTrips";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { LoginButton } from "@/components/auth/LoginButton";
@@ -11,15 +11,22 @@ import { Modal } from "@/components/ui/Modal";
 import { PrefectureSelector } from "@/components/prefecture/PrefectureSelector";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { ProfileService } from "@/lib/services/profileService";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Home() {
   const router = useRouter();
   const { createTrip } = useTrips();
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading, avatarUrl, signOut, refreshAvatar } = useAuth();
   const [showCreate, setShowCreate] = useState(false);
   const [selectedPrefecture, setSelectedPrefecture] = useState<number | null>(null);
   const [selectedSubRegion, setSelectedSubRegion] = useState<string | undefined>(undefined);
   const [tripName, setTripName] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSelectPrefecture = (code: number, subRegion?: string) => {
     setSelectedPrefecture(code);
@@ -28,19 +35,62 @@ export default function Home() {
 
   const handleCreate = async () => {
     if (!selectedPrefecture || !tripName.trim()) return;
-    const trip = await createTrip({
-      name: tripName.trim(),
-      prefectureCode: selectedPrefecture,
-      subRegion: selectedSubRegion,
-      days: 1,
-      spots: [],
-    });
-    setShowCreate(false);
-    setSelectedPrefecture(null);
-    setSelectedSubRegion(undefined);
-    setTripName("");
-    router.push(`/trip/${trip.id}`);
+    try {
+      const trip = await createTrip({
+        name: tripName.trim(),
+        prefectureCode: selectedPrefecture,
+        subRegion: selectedSubRegion,
+        days: 1,
+        spots: [],
+      });
+      router.push(`/trip/${trip.id}`);
+    } catch (err) {
+      console.error("Trip creation failed:", err);
+      alert("プラン作成に失敗しました: " + JSON.stringify(err));
+    }
   };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const service = new ProfileService(createClient());
+      await service.uploadAvatar(file);
+      await refreshAvatar();
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleSendFeedback = async () => {
+    if (!feedback.trim()) return;
+    try {
+      const supabase = createClient();
+      await supabase.from("feedback").insert({
+        message: feedback.trim(),
+        user_id: user?.id ?? null,
+        user_name: user?.user_metadata?.full_name ?? null,
+      });
+      setFeedbackSent(true);
+      setFeedback("");
+      setTimeout(() => {
+        setShowFeedback(false);
+        setFeedbackSent(false);
+      }, 1500);
+    } catch (err) {
+      console.error("Feedback failed:", err);
+    }
+  };
+
+  const displayAvatarUrl = avatarUrl || user?.user_metadata?.avatar_url;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 relative">
@@ -53,18 +103,43 @@ export default function Home() {
           >
             <Users size={16} />
           </button>
-          {user.user_metadata?.avatar_url ? (
-            <img
-              src={user.user_metadata.avatar_url}
-              alt=""
-              className="w-9 h-9 rounded-full border-2 border-border"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <div className="w-9 h-9 rounded-full bg-coral text-white flex items-center justify-center text-sm font-bold">
-              {(user.user_metadata?.full_name || user.email || "?")[0]}
+          <button
+            onClick={handleAvatarClick}
+            disabled={uploading}
+            className="relative group"
+          >
+            {displayAvatarUrl ? (
+              <img
+                src={displayAvatarUrl}
+                alt=""
+                className="w-9 h-9 rounded-full border-2 border-border object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-coral text-white flex items-center justify-center text-sm font-bold">
+                {(user.user_metadata?.full_name || user.email || "?")[0]}
+              </div>
+            )}
+            <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <Camera size={14} className="text-white" />
             </div>
-          )}
+            {uploading && (
+              <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center">
+                <motion.div
+                  className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+                />
+              </div>
+            )}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
           <button
             onClick={signOut}
             className="w-9 h-9 rounded-full bg-cream flex items-center justify-center text-text-sub hover:text-coral transition-colors"
@@ -120,6 +195,23 @@ export default function Home() {
             <LoginButton />
           </div>
         )}
+        {!authLoading && user && (
+          <div className="mt-4 flex items-center justify-center gap-2 text-sm text-text-sub">
+            {displayAvatarUrl ? (
+              <img
+                src={displayAvatarUrl}
+                alt=""
+                className="w-6 h-6 rounded-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="w-6 h-6 rounded-full bg-coral text-white flex items-center justify-center text-xs font-bold">
+                {(user.user_metadata?.full_name || user.email || "?")[0]}
+              </div>
+            )}
+            <span>{user.user_metadata?.full_name || user.email}でログイン中</span>
+          </div>
+        )}
       </motion.div>
 
       {/* Create Modal */}
@@ -168,6 +260,55 @@ export default function Home() {
                 作成する
               </Button>
             </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Feedback button */}
+      <button
+        onClick={() => setShowFeedback(true)}
+        className="fixed bottom-6 right-6 w-12 h-12 bg-coral text-white rounded-full shadow-lg flex items-center justify-center hover:bg-coral-dark active:scale-90 transition-all"
+        title="ご意見・ご要望"
+      >
+        <MessageCircle size={20} />
+      </button>
+
+      {/* Feedback Modal */}
+      <Modal
+        isOpen={showFeedback}
+        onClose={() => {
+          setShowFeedback(false);
+          setFeedbackSent(false);
+        }}
+        title="ご意見・ご要望"
+        compact
+      >
+        {feedbackSent ? (
+          <div className="text-center py-8">
+            <div className="text-4xl mb-3">🙏</div>
+            <p className="text-text font-bold">ありがとうございます！</p>
+            <p className="text-text-sub text-sm mt-1">いただいたご意見は改善に活かします</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-text-sub">
+              Plantreeをより良くするためのご意見をお聞かせください
+            </p>
+            <textarea
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              placeholder="例: もっとこうしてほしい、ここが使いにくい、こんな機能がほしい..."
+              rows={5}
+              className="w-full px-4 py-3 bg-cream border-2 border-border rounded-xl text-sm text-text placeholder:text-text-sub/50 focus:outline-none focus:border-coral transition-colors resize-none"
+              autoFocus
+            />
+            <Button
+              onClick={handleSendFeedback}
+              disabled={!feedback.trim()}
+              className="w-full py-3"
+            >
+              送信する
+            </Button>
           </div>
         )}
       </Modal>

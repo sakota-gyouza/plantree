@@ -3,6 +3,7 @@ export interface Profile {
   displayName: string;
   avatarUrl?: string;
   email?: string;
+  friendCode?: string;
 }
 
 export interface Friendship {

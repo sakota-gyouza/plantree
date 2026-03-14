@@ -61,23 +61,22 @@ export function useSpots(tripId: string) {
 
   const addSpot = async (spot: Omit<Spot, "id">) => {
     await getStorageAdapter().addSpot(tripId, spot);
-    // ログイン時はRealtimeが自動反映、未ログイン時は手動refresh
-    if (!user) await refresh();
+    await refresh();
   };
 
   const updateSpot = async (spotId: string, updates: Partial<Spot>) => {
     await getStorageAdapter().updateSpot(tripId, spotId, updates);
-    if (!user) await refresh();
+    await refresh();
   };
 
   const deleteSpot = async (spotId: string) => {
     await getStorageAdapter().deleteSpot(tripId, spotId);
-    if (!user) await refresh();
+    await refresh();
   };
 
   const reorderSpots = async (spotIds: string[]) => {
     await getStorageAdapter().reorderSpots(tripId, spotIds);
-    if (!user) await refresh();
+    await refresh();
   };
 
   return {

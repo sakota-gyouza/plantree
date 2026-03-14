@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#FFF8F0"/>
+  <g transform="translate(256, 240)">
+    <!-- Tree crown -->
+    <path d="M0-140 L80-20 L50-20 L100 60 L60 60 L110 140 L-110 140 L-60 60 L-100 60 L-50-20 L-80-20 Z" fill="#77DD77" stroke="#5BBF5B" stroke-width="4" stroke-linejoin="round"/>
+    <!-- Trunk -->
+    <rect x="-20" y="140" width="40" height="60" rx="6" fill="#C9A96E"/>
+  </g>
+  <!-- Text -->
+  <text x="256" y="460" text-anchor="middle" font-family="system-ui, sans-serif" font-size="56" font-weight="bold" fill="#FF9A8B">Plantree</text>
+</svg>

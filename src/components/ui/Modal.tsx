@@ -38,7 +38,7 @@ export function Modal({ isOpen, onClose, children, title, compact }: ModalProps)
           <motion.div
             className={`fixed z-50 flex flex-col overflow-hidden bg-white shadow-xl ${
               compact
-                ? "inset-x-4 bottom-4 top-auto rounded-2xl"
+                ? "inset-x-4 bottom-[5%] top-[5%] rounded-2xl"
                 : "inset-x-4 top-[10%] bottom-[10%] rounded-3xl"
             }`}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -57,7 +57,7 @@ export function Modal({ isOpen, onClose, children, title, compact }: ModalProps)
                 </button>
               </div>
             )}
-            <div className={compact ? "p-4" : "flex-1 overflow-y-auto p-5"}>{children}</div>
+            <div className={compact ? "flex-1 overflow-y-auto p-4" : "flex-1 overflow-y-auto p-5"}>{children}</div>
           </motion.div>
         </>
       )}

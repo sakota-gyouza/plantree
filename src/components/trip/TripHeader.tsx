@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Edit3, Share2 } from "lucide-react";
+import { ArrowLeft, Edit3, UserPlus, Share2 } from "lucide-react";
 import { Trip } from "@/types/trip";
 import { prefectures } from "@/data/prefectures";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -12,10 +12,11 @@ interface TripHeaderProps {
   trip: Trip;
   onEditName: () => void;
   onShare?: () => void;
+  onSnsShare?: () => void;
   onlineUsers?: OnlineUser[];
 }
 
-export function TripHeader({ trip, onEditName, onShare, onlineUsers = [] }: TripHeaderProps) {
+export function TripHeader({ trip, onEditName, onShare, onSnsShare, onlineUsers = [] }: TripHeaderProps) {
   const router = useRouter();
   const { user } = useAuth();
   const pref = prefectures[trip.prefectureCode];
@@ -43,12 +44,22 @@ export function TripHeader({ trip, onEditName, onShare, onlineUsers = [] }: Trip
         )}
       </div>
       <OnlineUsers users={onlineUsers} />
+      {user && onSnsShare && (
+        <button
+          onClick={onSnsShare}
+          className="p-2 rounded-full hover:bg-cream transition-colors text-text-sub hover:text-coral"
+          title="SNSシェア"
+        >
+          <Share2 size={18} />
+        </button>
+      )}
       {user && onShare && (
         <button
           onClick={onShare}
           className="p-2 rounded-full hover:bg-cream transition-colors text-text-sub hover:text-coral"
+          title="フレンド招待"
         >
-          <Share2 size={18} />
+          <UserPlus size={18} />
         </button>
       )}
     </div>

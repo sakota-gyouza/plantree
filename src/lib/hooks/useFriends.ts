@@ -11,6 +11,7 @@ export function useFriends() {
   const [friends, setFriends] = useState<Friendship[]>([]);
   const [pendingRequests, setPendingRequests] = useState<Friendship[]>([]);
   const [sentRequests, setSentRequests] = useState<Friendship[]>([]);
+  const [myFriendCode, setMyFriendCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const getService = useCallback(() => {
@@ -23,14 +24,16 @@ export function useFriends() {
       return;
     }
     const service = getService();
-    const [f, p, s] = await Promise.all([
+    const [f, p, s, code] = await Promise.all([
       service.getFriends(),
       service.getPendingRequests(),
       service.getSentRequests(),
+      service.getMyFriendCode(),
     ]);
     setFriends(f);
     setPendingRequests(p);
     setSentRequests(s);
+    setMyFriendCode(code);
     setLoading(false);
   }, [user, getService]);
 
@@ -66,6 +69,7 @@ export function useFriends() {
     friends,
     pendingRequests,
     sentRequests,
+    myFriendCode,
     loading,
     searchUsers,
     sendRequest,

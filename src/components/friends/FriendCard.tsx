@@ -37,7 +37,7 @@ export function FriendCard({
         <img
           src={profile.avatarUrl}
           alt=""
-          className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
+          className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover"
           referrerPolicy="no-referrer"
         />
       ) : (

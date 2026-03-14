@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Search, UserPlus, Users, Clock } from "lucide-react";
+import { ArrowLeft, Search, UserPlus, Users, Clock, Copy, Check } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useFriends } from "@/lib/hooks/useFriends";
 import { FriendCard } from "@/components/friends/FriendCard";
@@ -19,6 +19,7 @@ export default function FriendsPage() {
     friends,
     pendingRequests,
     sentRequests,
+    myFriendCode,
     loading,
     searchUsers,
     sendRequest,
@@ -27,6 +28,14 @@ export default function FriendsPage() {
     removeFriend,
   } = useFriends();
   const [activeTab, setActiveTab] = useState<Tab>("friends");
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyCode = () => {
+    if (!myFriendCode) return;
+    navigator.clipboard.writeText(myFriendCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   if (authLoading) {
     return (
@@ -83,6 +92,15 @@ export default function FriendsPage() {
             <ArrowLeft size={16} />
           </button>
           <h1 className="text-lg font-bold text-text">フレンド</h1>
+          {myFriendCode && (
+            <button
+              onClick={handleCopyCode}
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-cream rounded-lg text-xs font-bold text-text-sub hover:text-coral transition-colors"
+            >
+              <span>ID: {myFriendCode}</span>
+              {copied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+            </button>
+          )}
         </div>
 
         {/* Tabs */}

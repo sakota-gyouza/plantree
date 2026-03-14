@@ -44,6 +44,8 @@ export interface Trip {
   date?: string;
   days: number;
   dayInfos?: DayInfo[]; // index 0 = day 1, optional overrides
+  coverImageUrl?: string;
+  isPublic?: boolean;
   spots: Spot[];
   createdAt: string;
   updatedAt: string;

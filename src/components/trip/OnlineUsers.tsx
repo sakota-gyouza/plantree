@@ -17,7 +17,7 @@ export function OnlineUsers({ users }: OnlineUsersProps) {
             <img
               src={u.avatarUrl}
               alt=""
-              className="w-7 h-7 rounded-full border-2 border-white shadow-sm"
+              className="w-7 h-7 rounded-full border-2 border-white shadow-sm object-cover"
               referrerPolicy="no-referrer"
             />
           ) : (

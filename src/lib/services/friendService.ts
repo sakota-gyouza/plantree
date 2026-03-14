@@ -6,6 +6,7 @@ interface ProfileRow {
   display_name: string;
   avatar_url: string | null;
   email: string | null;
+  friend_code: string | null;
 }
 
 function profileFromRow(row: ProfileRow): Profile {
@@ -14,6 +15,7 @@ function profileFromRow(row: ProfileRow): Profile {
     displayName: row.display_name,
     avatarUrl: row.avatar_url ?? undefined,
     email: row.email ?? undefined,
+    friendCode: row.friend_code ?? undefined,
   };
 }
 
@@ -55,11 +57,22 @@ export class FriendService {
     const { data } = await this.supabase
       .from("profiles")
       .select("*")
-      .or(`email.ilike.%${query}%,display_name.ilike.%${query}%`)
+      .ilike("friend_code", query.trim())
       .neq("id", userId)
       .limit(10);
 
     return (data ?? []).map(profileFromRow);
+  }
+
+  async getMyFriendCode(): Promise<string | null> {
+    const userId = await this.getUserId();
+    const { data } = await this.supabase
+      .from("profiles")
+      .select("friend_code")
+      .eq("id", userId)
+      .single();
+
+    return data?.friend_code ?? null;
   }
 
   async sendRequest(addresseeId: string): Promise<Friendship> {

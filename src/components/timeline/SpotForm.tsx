@@ -6,7 +6,7 @@ import { PrefectureShape } from "@/data/prefectures";
 import { searchPlaces, geocodeAddress, rememberUserSpot, GeocodeSuggestion } from "@/lib/utils/geocode";
 import { Button } from "@/components/ui/Button";
 import { iconMap, colorMap } from "@/components/prefecture/PrefecturePin";
-import { MapPin, Search, Loader2, X } from "lucide-react";
+import { MapPin, Search, Loader2, X, MapPinOff } from "lucide-react";
 
 export interface SpotFormData {
   name: string;
@@ -140,6 +140,14 @@ export function SpotForm({ initialData, prefecture, prefectureCode, onSubmit, on
     setSelectedPosition(null);
   };
 
+  const handleSkipAddress = () => {
+    setShowSuggestions(false);
+    setManualAddress(false);
+    setNoPin(true);
+    setSelectedPosition(null);
+    setSelectedLatLon(null);
+  };
+
   const handleResolveAddress = async () => {
     if (!address.trim()) return;
     setResolving(true);
@@ -178,7 +186,7 @@ export function SpotForm({ initialData, prefecture, prefectureCode, onSubmit, on
     : !!name.trim() && (!!selectedPosition || noPin);
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 h-full">
       {/* Name with autocomplete */}
       <div className="relative">
         <div className="relative">
@@ -239,6 +247,14 @@ export function SpotForm({ initialData, prefecture, prefectureCode, onSubmit, on
                   <MapPin size={14} />
                   <span className="text-sm font-bold">住所を直接入力する</span>
                 </button>
+                <button
+                  type="button"
+                  onClick={handleSkipAddress}
+                  className="w-full text-left px-3 py-3 hover:bg-cream active:bg-peach/30 transition-colors flex items-center gap-1.5 text-text-sub border-t border-border/30"
+                >
+                  <MapPinOff size={14} />
+                  <span className="text-sm font-bold">住所を指定せず確定する</span>
+                </button>
               </>
             ) : !searching ? (
               <div className="px-3 py-3">
@@ -248,10 +264,18 @@ export function SpotForm({ initialData, prefecture, prefectureCode, onSubmit, on
                 <button
                   type="button"
                   onClick={handleManualAddressSelect}
-                  className="w-full text-left py-1 flex items-center gap-1.5 text-coral"
+                  className="w-full text-left py-2 flex items-center gap-1.5 text-coral"
                 >
                   <MapPin size={14} />
                   <span className="text-sm font-bold">住所を直接入力する</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSkipAddress}
+                  className="w-full text-left py-2 flex items-center gap-1.5 text-text-sub"
+                >
+                  <MapPinOff size={14} />
+                  <span className="text-sm font-bold">住所を指定せず確定する</span>
                 </button>
               </div>
             ) : null}
@@ -326,44 +350,37 @@ export function SpotForm({ initialData, prefecture, prefectureCode, onSubmit, on
         </div>
       </div>
 
-      {/* Icon picker - horizontal slider */}
+      {/* Icon picker - grid */}
       <div>
-        <label className="text-xs text-text-sub font-bold mb-1 block">カテゴリ</label>
-        <div className="relative -mx-4">
-          <div className="flex gap-1.5 overflow-x-auto pb-1 px-4 scrollbar-hide">
-            {spotIcons.map(({ value, label }) => {
-              const Icon = iconMap[value];
-              const color = colorMap[value];
-              const isSelected = icon === value;
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setIcon(value)}
-                  className={`flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-lg transition-all flex-shrink-0 ${
-                    isSelected
-                      ? "bg-cream border border-coral"
-                      : "border border-transparent hover:bg-cream"
-                  }`}
+        <label className="text-xs text-text-sub font-bold mb-1.5 block">カテゴリ</label>
+        <div className="grid grid-cols-7 gap-1">
+          {spotIcons.map(({ value, label }) => {
+            const Icon = iconMap[value];
+            const color = colorMap[value];
+            const isSelected = icon === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setIcon(value)}
+                className={`flex flex-col items-center gap-0.5 py-1.5 rounded-lg transition-all ${
+                  isSelected
+                    ? "bg-cream border border-coral"
+                    : "border border-transparent hover:bg-cream"
+                }`}
+              >
+                <div
+                  className="w-7 h-7 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: isSelected ? color : "#f0f0f0" }}
                 >
-                  <div
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: isSelected ? color : "#f0f0f0" }}
-                  >
-                    <Icon size={12} />
-                  </div>
-                  <span className="text-[9px] font-bold text-text-sub leading-none">
-                    {label}
-                  </span>
-                </button>
-              );
-            })}
-            {/* Spacer so last item isn't flush with edge */}
-            <div className="flex-shrink-0 w-2" />
-          </div>
-          {/* Fade hints on both edges */}
-          <div className="absolute left-0 top-0 bottom-1 w-5 bg-gradient-to-r from-white to-transparent pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-1 w-5 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+                  <Icon size={13} />
+                </div>
+                <span className="text-[9px] font-bold text-text-sub leading-none">
+                  {label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -388,6 +405,8 @@ export function SpotForm({ initialData, prefecture, prefectureCode, onSubmit, on
           <span className="text-xs text-text-sub">地図にピンを刺さない</span>
         </label>
       )}
+
+      <div className="flex-1" />
 
       {/* Actions */}
       <div className="flex gap-2 items-center">

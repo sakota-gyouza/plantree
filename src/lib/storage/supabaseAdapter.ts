@@ -30,6 +30,8 @@ interface TripRow {
   date: string | null;
   days: number;
   day_infos: unknown;
+  cover_image_url: string | null;
+  is_public: boolean;
   owner_id: string;
   created_at: string;
   updated_at: string;
@@ -63,6 +65,8 @@ function tripFromRow(row: TripRow): Trip {
     date: row.date ?? undefined,
     days: row.days,
     dayInfos: (row.day_infos as Trip["dayInfos"]) ?? undefined,
+    coverImageUrl: row.cover_image_url ?? undefined,
+    isPublic: row.is_public ?? false,
     spots: spotRows.map(spotFromRow).sort((a, b) => a.order - b.order),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -160,6 +164,10 @@ export class SupabaseAdapter implements StorageAdapter {
     if (updates.days !== undefined) updateData.days = updates.days;
     if (updates.dayInfos !== undefined)
       updateData.day_infos = updates.dayInfos;
+    if (updates.coverImageUrl !== undefined)
+      updateData.cover_image_url = updates.coverImageUrl;
+    if (updates.isPublic !== undefined)
+      updateData.is_public = updates.isPublic;
 
     const { error } = await this.supabase
       .from("trips")
