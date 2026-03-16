@@ -34,27 +34,33 @@
   --font-jp: "Zen Maru Gothic", sans-serif;
 }
 
-html, body {
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: touch;
-}
-
 body {
   background: var(--color-cream);
   color: var(--color-text);
   font-family: var(--font-sans);
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
 }
 
-#__next, body > div {
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: touch;
+/* PWA（ホーム画面から開いた場合）のみ固定レイアウト */
+@media (display-mode: standalone) {
+  html, body {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  #__next, body > div {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* Spot icon colors */
