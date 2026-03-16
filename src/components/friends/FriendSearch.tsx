@@ -22,6 +22,7 @@ export function FriendSearch({
   const [results, setResults] = useState<Profile[]>([]);
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [justSentIds, setJustSentIds] = useState<string[]>([]);
 
   const handleSearch = useCallback(async () => {
     if (!query.trim()) return;
@@ -40,9 +41,9 @@ export function FriendSearch({
         onClick: () => {},
       };
     }
-    if (sentRequestIds.includes(profile.id)) {
+    if (sentRequestIds.includes(profile.id) || justSentIds.includes(profile.id)) {
       return {
-        label: "申請済",
+        label: "申請完了",
         variant: "disabled" as const,
         onClick: () => {},
       };
@@ -50,7 +51,10 @@ export function FriendSearch({
     return {
       label: "申請",
       variant: "primary" as const,
-      onClick: () => onSendRequest(profile.id),
+      onClick: async () => {
+        await onSendRequest(profile.id);
+        setJustSentIds((prev) => [...prev, profile.id]);
+      },
     };
   };
 
