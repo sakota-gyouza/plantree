@@ -173,7 +173,7 @@ export default function Home() {
           <TreePine className="text-coral" size={28} />
           <h1 className="text-3xl font-bold text-text">Plantree</h1>
         </div>
-        <p className="text-text-sub text-sm">旅のプランを可愛く作ろう</p>
+        <p className="text-text-sub text-sm">旅や遊びのプランを可愛く作ろう</p>
       </motion.div>
 
       {/* Action buttons */}
