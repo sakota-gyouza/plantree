@@ -187,15 +187,24 @@ export async function searchPlaces(
 // Simplify Japanese address for Nominatim (remove 字, 番地, 号 etc.)
 function simplifyAddress(addr: string): string[] {
   const candidates: string[] = [addr];
-  // Remove 番地, 号, 字 and trailing numbers
-  const simplified = addr
+  // Normalize fullwidth digits/hyphens to halfwidth
+  const normalized = addr.replace(/[０-９]/g, (ch) =>
+    String.fromCharCode(ch.charCodeAt(0) - 0xFEE0)
+  ).replace(/[ー−―‐]/g, "-");
+  if (normalized !== addr) candidates.push(normalized);
+  // Remove 番地, 号, 字 and trailing numbers/hyphens
+  const simplified = normalized
     .replace(/[字大字]/g, "")
     .replace(/\d+番地?/g, "")
     .replace(/\d+号/g, "")
-    .replace(/[-ー−]\d+/g, "")
+    .replace(/\d+[-]\d+/g, "")
+    .replace(/\d+$/g, "")
+    .replace(/[-]+$/g, "")
     .replace(/\s+/g, "")
     .trim();
-  if (simplified && simplified !== addr) candidates.push(simplified);
+  if (simplified && simplified !== normalized && simplified !== addr) {
+    candidates.push(simplified);
+  }
   return candidates;
 }
 
