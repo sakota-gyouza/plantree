@@ -205,7 +205,16 @@ export async function geocodeAddress(
 ): Promise<{ x: number; y: number; lat: number; lon: number } | null> {
   if (!prefecture.geo) return null;
 
-  const queries = simplifyAddress(address);
+  const prefName = basePrefName(prefecture.name);
+  const baseQueries = simplifyAddress(address);
+  // Try with prefecture name prepended, then without
+  const queries: string[] = [];
+  for (const q of baseQueries) {
+    if (!q.includes(prefName)) {
+      queries.push(`${prefName}${q}`);
+    }
+    queries.push(q);
+  }
 
   for (const q of queries) {
     try {
