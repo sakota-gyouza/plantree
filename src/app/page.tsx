@@ -219,14 +219,6 @@ export default function Home() {
             <span>{user.user_metadata?.full_name || user.email}でログイン中</span>
           </div>
         )}
-        {!isStandalone && (
-          <button
-            onClick={() => setShowInstallGuide(true)}
-            className="mt-4 w-full py-2.5 px-4 bg-coral/5 border border-coral/20 rounded-xl text-xs text-coral font-bold hover:bg-coral/10 transition-colors"
-          >
-            ホーム画面に追加するともっと使いやすいよ
-          </button>
-        )}
       </motion.div>
 
       {/* Create Modal */}
@@ -280,29 +272,49 @@ export default function Home() {
       </Modal>
 
       {/* Fixed bottom buttons */}
-      <div className="fixed bottom-6 right-6 flex items-center gap-3">
-        <button
-          onClick={() => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const evt = (window as any).__deferredInstallPrompt;
-            if (evt) {
-              evt.prompt();
-            } else {
-              setShowInstallGuide(true);
-            }
-          }}
-          className="w-12 h-12 bg-white text-coral border-2 border-coral rounded-full shadow-lg flex items-center justify-center hover:bg-coral hover:text-white active:scale-90 transition-all"
-          title="ホーム画面に追加"
-        >
-          <Download size={20} />
-        </button>
-        <button
-          onClick={() => setShowFeedback(true)}
-          className="w-12 h-12 bg-coral text-white rounded-full shadow-lg flex items-center justify-center hover:bg-coral-dark active:scale-90 transition-all"
-          title="ご意見・ご要望"
-        >
-          <MessageCircle size={20} />
-        </button>
+      <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3">
+        {/* Install tooltip - browser only */}
+        {!isStandalone && (
+          <button
+            onClick={() => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const evt = (window as any).__deferredInstallPrompt;
+              if (evt) {
+                evt.prompt();
+              } else {
+                setShowInstallGuide(true);
+              }
+            }}
+            className="relative bg-white text-text rounded-2xl shadow-lg px-4 py-2.5 text-xs font-bold border border-border animate-fade-in"
+          >
+            ホーム画面に追加するともっと使いやすくなります
+            <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-white border-r border-b border-border rotate-45" />
+          </button>
+        )}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const evt = (window as any).__deferredInstallPrompt;
+              if (evt) {
+                evt.prompt();
+              } else {
+                setShowInstallGuide(true);
+              }
+            }}
+            className="w-12 h-12 bg-white text-coral border-2 border-coral rounded-full shadow-lg flex items-center justify-center hover:bg-coral hover:text-white active:scale-90 transition-all"
+            title="ホーム画面に追加"
+          >
+            <Download size={20} />
+          </button>
+          <button
+            onClick={() => setShowFeedback(true)}
+            className="w-12 h-12 bg-coral text-white rounded-full shadow-lg flex items-center justify-center hover:bg-coral-dark active:scale-90 transition-all"
+            title="ご意見・ご要望"
+          >
+            <MessageCircle size={20} />
+          </button>
+        </div>
       </div>
 
       {/* Feedback Modal */}
