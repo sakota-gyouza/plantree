@@ -191,7 +191,8 @@ export default function Home() {
           プラン一覧を見る
         </button>
         {!authLoading && !user && (
-          <div className="mt-2">
+          <div className="mt-2 flex flex-col items-center gap-2">
+            <p className="text-xs text-text-sub">ログインするとプランが記録されるよ 🌱</p>
             <LoginButton />
           </div>
         )}
