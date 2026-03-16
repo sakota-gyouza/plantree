@@ -38,6 +38,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__deferredInstallPrompt=e;});`,
+          }}
+        />
+      </head>
       <body className="antialiased min-h-screen bg-cream">
         <AuthProvider>
           <div className="max-w-[430px] mx-auto bg-white min-h-screen shadow-sm">

@@ -204,3 +204,30 @@ CREATE TRIGGER update_trips_updated_at
 CREATE TRIGGER update_spots_updated_at
   BEFORE UPDATE ON public.spots
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+-- ============================================================
+-- PACKING ITEMS (持ち物リスト - ユーザー個別)
+-- ============================================================
+CREATE TABLE public.packing_items (
+  id TEXT PRIMARY KEY,
+  trip_id TEXT NOT NULL REFERENCES public.trips(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  checked BOOLEAN NOT NULL DEFAULT false,
+  "order" INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_packing_items_trip_user ON public.packing_items(trip_id, user_id, "order");
+
+-- RLS: 自分の持ち物のみ閲覧・編集可能（共同プランでも他人には見えない）
+ALTER TABLE public.packing_items ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can manage their own packing items" ON public.packing_items
+  FOR ALL USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE TRIGGER update_packing_items_updated_at
+  BEFORE UPDATE ON public.packing_items
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();

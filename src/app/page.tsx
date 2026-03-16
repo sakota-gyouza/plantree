@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { TreePine, List, LogOut, Users, Camera, MessageCircle } from "lucide-react";
+import { TreePine, List, LogOut, Users, Camera, MessageCircle, Download, Share } from "lucide-react";
 import { useTrips } from "@/lib/hooks/useTrips";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { LoginButton } from "@/components/auth/LoginButton";
@@ -212,6 +212,30 @@ export default function Home() {
             <span>{user.user_metadata?.full_name || user.email}でログイン中</span>
           </div>
         )}
+        <button
+          onClick={() => {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+              alert("Safari の共有ボタン（□↑）から「ホーム画面に追加」を選んでください");
+            } else {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const evt = (window as any).__deferredInstallPrompt;
+              if (evt) {
+                evt.prompt();
+              } else {
+                alert("ブラウザのメニューから「ホーム画面に追加」を選んでください");
+              }
+            }
+          }}
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border-2 border-border text-text-sub font-bold hover:border-coral hover:text-coral transition-colors mt-1"
+        >
+          {/iPad|iPhone|iPod/.test(typeof navigator !== "undefined" ? navigator.userAgent : "") ? (
+            <Share size={16} />
+          ) : (
+            <Download size={16} />
+          )}
+          ホーム画面に追加
+        </button>
       </motion.div>
 
       {/* Create Modal */}
@@ -290,7 +314,7 @@ export default function Home() {
             <p className="text-text-sub text-sm mt-1">いただいたご意見は改善に活かします</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 h-full">
             <p className="text-sm text-text-sub">
               Plantreeをより良くするためのご意見をお聞かせください
             </p>
@@ -298,8 +322,7 @@ export default function Home() {
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               placeholder="例: もっとこうしてほしい、ここが使いにくい、こんな機能がほしい..."
-              rows={5}
-              className="w-full px-4 py-3 bg-cream border-2 border-border rounded-xl text-sm text-text placeholder:text-text-sub/50 focus:outline-none focus:border-coral transition-colors resize-none"
+              className="w-full flex-1 min-h-[120px] px-4 py-3 bg-cream border-2 border-border rounded-xl text-sm text-text placeholder:text-text-sub/50 focus:outline-none focus:border-coral transition-colors resize-none"
               autoFocus
             />
             <Button

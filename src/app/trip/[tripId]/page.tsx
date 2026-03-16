@@ -11,11 +11,13 @@ import { Spot } from "@/types/trip";
 import { PrefectureMap } from "@/components/prefecture/PrefectureMap";
 import { TimelineTree } from "@/components/timeline/TimelineTree";
 import { SpotForm, SpotFormData } from "@/components/timeline/SpotForm";
+import { PackingList } from "@/components/packing/PackingList";
 import { TripHeader } from "@/components/trip/TripHeader";
 import { ShareModal } from "@/components/trip/ShareModal";
 import { SnsShareModal } from "@/components/trip/SnsShareModal";
 import { OnlineUsers } from "@/components/trip/OnlineUsers";
 import { Modal } from "@/components/ui/Modal";
+import { TreePine, ClipboardList } from "lucide-react";
 
 export default function TripPage() {
   const params = useParams();
@@ -32,6 +34,7 @@ export default function TripPage() {
   const [newName, setNewName] = useState("");
   const [showShare, setShowShare] = useState(false);
   const [showSnsShare, setShowSnsShare] = useState(false);
+  const [activeTab, setActiveTab] = useState<"timeline" | "packing">("timeline");
 
   const getStorageAdapter = useCallback(() => {
     if (user) return getStorage(createClient());
@@ -177,7 +180,7 @@ export default function TripPage() {
 
       <div className="flex-1 flex flex-col">
         {/* Map Section */}
-        <div className="px-2 pt-2 pb-1 flex items-center justify-center bg-cream/50">
+        <div className="px-2 pt-2 pb-1 flex items-center justify-center bg-cream/50 max-h-[35vh] overflow-hidden">
           <PrefectureMap
             prefecture={prefecture}
             spots={spots}
@@ -185,25 +188,57 @@ export default function TripPage() {
           />
         </div>
 
-        {/* Timeline Section */}
-        <div className="border-t border-border bg-white/50 px-4 py-3 flex-1">
-          <h2 className="text-sm font-bold text-text-sub mb-2 px-1">
+        {/* Tab bar */}
+        <div className="border-t border-border bg-white/80 px-4 pt-2 flex gap-1">
+          <button
+            onClick={() => setActiveTab("timeline")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-bold rounded-xl transition-colors ${
+              activeTab === "timeline"
+                ? "text-coral bg-coral/10"
+                : "text-text-sub hover:text-text"
+            }`}
+          >
+            <TreePine size={14} />
             タイムライン
-          </h2>
-          <TimelineTree
-            spots={spots}
-            days={days}
-            dayInfos={trip.dayInfos}
-            activeDay={activeDay}
-            onActiveDayChange={setActiveDay}
-            onReorder={reorderSpots}
-            onEditSpot={handleEditSpot}
-            onDeleteSpot={handleDeleteSpotDirect}
-            onAddClick={handleAddClick}
-            onAddDay={handleAddDay}
-            onRemoveDay={handleRemoveDay}
-            onUpdateDayLabel={handleUpdateDayLabel}
-          />
+          </button>
+          <button
+            onClick={() => setActiveTab("packing")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-bold rounded-xl transition-colors ${
+              activeTab === "packing"
+                ? "text-coral bg-coral/10"
+                : "text-text-sub hover:text-text"
+            }`}
+          >
+            <ClipboardList size={14} />
+            持ち物リスト
+          </button>
+        </div>
+
+        {/* Tab content */}
+        <div className="bg-white/50 px-4 py-3 flex-1">
+          {activeTab === "timeline" ? (
+            <>
+              <h2 className="text-sm font-bold text-text-sub mb-2 px-1">
+                タイムライン
+              </h2>
+              <TimelineTree
+                spots={spots}
+                days={days}
+                dayInfos={trip.dayInfos}
+                activeDay={activeDay}
+                onActiveDayChange={setActiveDay}
+                onReorder={reorderSpots}
+                onEditSpot={handleEditSpot}
+                onDeleteSpot={handleDeleteSpotDirect}
+                onAddClick={handleAddClick}
+                onAddDay={handleAddDay}
+                onRemoveDay={handleRemoveDay}
+                onUpdateDayLabel={handleUpdateDayLabel}
+              />
+            </>
+          ) : (
+            <PackingList tripId={tripId} />
+          )}
         </div>
       </div>
 
