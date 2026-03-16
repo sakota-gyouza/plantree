@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { TreePine, List, LogOut, Users, Camera, MessageCircle, Download } from "lucide-react";
@@ -27,7 +27,12 @@ export default function Home() {
   const [feedback, setFeedback] = useState("");
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
+  }, []);
 
   const handleSelectPrefecture = (code: number, subRegion?: string) => {
     setSelectedPrefecture(code);
@@ -213,6 +218,14 @@ export default function Home() {
             )}
             <span>{user.user_metadata?.full_name || user.email}でログイン中</span>
           </div>
+        )}
+        {!isStandalone && (
+          <button
+            onClick={() => setShowInstallGuide(true)}
+            className="mt-4 w-full py-2.5 px-4 bg-coral/5 border border-coral/20 rounded-xl text-xs text-coral font-bold hover:bg-coral/10 transition-colors"
+          >
+            ホーム画面に追加するともっと使いやすいよ
+          </button>
         )}
       </motion.div>
 
