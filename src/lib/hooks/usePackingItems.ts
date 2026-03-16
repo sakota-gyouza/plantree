@@ -32,18 +32,30 @@ export function usePackingItems(tripId: string) {
   }, [refresh]);
 
   const addItem = async (name: string) => {
-    await getAdapter().addPackingItem(tripId, name);
-    await refresh();
+    try {
+      await getAdapter().addPackingItem(tripId, name);
+      await refresh();
+    } catch (err) {
+      console.error("Failed to add packing item:", err);
+    }
   };
 
   const toggleItem = async (itemId: string, checked: boolean) => {
-    await getAdapter().updatePackingItem(itemId, { checked });
-    await refresh();
+    try {
+      await getAdapter().updatePackingItem(itemId, { checked });
+      await refresh();
+    } catch (err) {
+      console.error("Failed to toggle packing item:", err);
+    }
   };
 
   const deleteItem = async (itemId: string) => {
-    await getAdapter().deletePackingItem(itemId);
-    await refresh();
+    try {
+      await getAdapter().deletePackingItem(itemId);
+      await refresh();
+    } catch (err) {
+      console.error("Failed to delete packing item:", err);
+    }
   };
 
   const checkedCount = items.filter((i) => i.checked).length;

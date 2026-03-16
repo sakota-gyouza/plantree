@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { TreePine, List, LogOut, Users, Camera, MessageCircle, Download, Share } from "lucide-react";
+import { TreePine, List, LogOut, Users, Camera, MessageCircle, Download } from "lucide-react";
 import { useTrips } from "@/lib/hooks/useTrips";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { LoginButton } from "@/components/auth/LoginButton";
@@ -213,30 +213,6 @@ export default function Home() {
             <span>{user.user_metadata?.full_name || user.email}でログイン中</span>
           </div>
         )}
-        <button
-          onClick={() => {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (isIOS) {
-              alert("Safari の共有ボタン（□↑）から「ホーム画面に追加」を選んでください");
-            } else {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const evt = (window as any).__deferredInstallPrompt;
-              if (evt) {
-                evt.prompt();
-              } else {
-                alert("ブラウザのメニューから「ホーム画面に追加」を選んでください");
-              }
-            }
-          }}
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border-2 border-border text-text-sub font-bold hover:border-coral hover:text-coral transition-colors mt-1"
-        >
-          {/iPad|iPhone|iPod/.test(typeof navigator !== "undefined" ? navigator.userAgent : "") ? (
-            <Share size={16} />
-          ) : (
-            <Download size={16} />
-          )}
-          ホーム画面に追加
-        </button>
       </motion.div>
 
       {/* Create Modal */}
@@ -289,14 +265,36 @@ export default function Home() {
         )}
       </Modal>
 
-      {/* Feedback button */}
-      <button
-        onClick={() => setShowFeedback(true)}
-        className="fixed bottom-6 right-6 w-12 h-12 bg-coral text-white rounded-full shadow-lg flex items-center justify-center hover:bg-coral-dark active:scale-90 transition-all"
-        title="ご意見・ご要望"
-      >
-        <MessageCircle size={20} />
-      </button>
+      {/* Fixed bottom buttons */}
+      <div className="fixed bottom-6 right-6 flex items-center gap-3">
+        <button
+          onClick={() => {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+              alert("Safari の共有ボタン（□↑）から\n「ホーム画面に追加」を選んでください");
+            } else {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const evt = (window as any).__deferredInstallPrompt;
+              if (evt) {
+                evt.prompt();
+              } else {
+                alert("ブラウザのメニューから\n「ホーム画面に追加」を選んでください");
+              }
+            }
+          }}
+          className="w-12 h-12 bg-white text-coral border-2 border-coral rounded-full shadow-lg flex items-center justify-center hover:bg-coral hover:text-white active:scale-90 transition-all"
+          title="ホーム画面に追加"
+        >
+          <Download size={20} />
+        </button>
+        <button
+          onClick={() => setShowFeedback(true)}
+          className="w-12 h-12 bg-coral text-white rounded-full shadow-lg flex items-center justify-center hover:bg-coral-dark active:scale-90 transition-all"
+          title="ご意見・ご要望"
+        >
+          <MessageCircle size={20} />
+        </button>
+      </div>
 
       {/* Feedback Modal */}
       <Modal
