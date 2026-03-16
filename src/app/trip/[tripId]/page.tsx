@@ -178,9 +178,10 @@ export default function TripPage() {
         onlineUsers={onlineUsers}
       />
 
-      <div className="flex-1 flex flex-col min-h-0">
+      {/* Scrollable area: map + overlapping content */}
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-none">
         {/* Map Section */}
-        <div className="px-2 pt-2 pb-1 flex items-center justify-center bg-cream/50 max-h-[25vh] overflow-hidden">
+        <div className="px-2 pt-2 pb-0 flex items-center justify-center bg-cream/50">
           <PrefectureMap
             prefecture={prefecture}
             spots={spots}
@@ -188,39 +189,42 @@ export default function TripPage() {
           />
         </div>
 
-        {/* Tab bar */}
-        <div className="border-t border-border bg-white/80 px-4 pt-2 flex gap-1">
-          <button
-            onClick={() => setActiveTab("timeline")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-bold rounded-xl transition-colors ${
-              activeTab === "timeline"
-                ? "text-coral bg-coral/10"
-                : "text-text-sub hover:text-text"
-            }`}
-          >
-            <TreePine size={14} />
-            タイムライン
-          </button>
-          <button
-            onClick={() => setActiveTab("packing")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-bold rounded-xl transition-colors ${
-              activeTab === "packing"
-                ? "text-coral bg-coral/10"
-                : "text-text-sub hover:text-text"
-            }`}
-          >
-            <ClipboardList size={14} />
-            持ち物リスト
-          </button>
-        </div>
+        {/* Content card overlapping map */}
+        <div className="relative -mt-6 bg-white rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.06)] min-h-[60vh]">
+          {/* Drag handle */}
+          <div className="flex justify-center pt-3 pb-1">
+            <div className="w-10 h-1 bg-border rounded-full" />
+          </div>
 
-        {/* Tab content */}
-        <div className="bg-white/50 px-4 pt-3 pb-6 flex-1 min-h-0 overflow-y-auto overscroll-none">
-          {activeTab === "timeline" ? (
-            <>
-              <h2 className="text-sm font-bold text-text-sub mb-2 px-1">
-                タイムライン
-              </h2>
+          {/* Tab bar */}
+          <div className="px-4 pt-1 pb-1 flex gap-1">
+            <button
+              onClick={() => setActiveTab("timeline")}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-bold rounded-xl transition-colors ${
+                activeTab === "timeline"
+                  ? "text-coral bg-coral/10"
+                  : "text-text-sub hover:text-text"
+              }`}
+            >
+              <TreePine size={14} />
+              タイムライン
+            </button>
+            <button
+              onClick={() => setActiveTab("packing")}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-bold rounded-xl transition-colors ${
+                activeTab === "packing"
+                  ? "text-coral bg-coral/10"
+                  : "text-text-sub hover:text-text"
+              }`}
+            >
+              <ClipboardList size={14} />
+              持ち物リスト
+            </button>
+          </div>
+
+          {/* Tab content */}
+          <div className="px-4 pt-2 pb-8">
+            {activeTab === "timeline" ? (
               <TimelineTree
                 spots={spots}
                 days={days}
@@ -235,10 +239,10 @@ export default function TripPage() {
                 onRemoveDay={handleRemoveDay}
                 onUpdateDayLabel={handleUpdateDayLabel}
               />
-            </>
-          ) : (
-            <PackingList tripId={tripId} />
-          )}
+            ) : (
+              <PackingList tripId={tripId} />
+            )}
+          </div>
         </div>
       </div>
 
