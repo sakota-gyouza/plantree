@@ -6,8 +6,9 @@ import { useSpots } from "@/lib/hooks/useSpots";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getStorage } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/client";
-import { getPrefecture } from "@/data/prefectures";
-import { Spot } from "@/types/trip";
+import { getPrefecture, prefectures } from "@/data/prefectures";
+import { Spot, Trip } from "@/types/trip";
+import { PrefectureSelector } from "@/components/prefecture/PrefectureSelector";
 import { PrefectureMap } from "@/components/prefecture/PrefectureMap";
 import { TimelineTree } from "@/components/timeline/TimelineTree";
 import { SpotForm, SpotFormData } from "@/components/timeline/SpotForm";
@@ -18,6 +19,14 @@ import { SnsShareModal } from "@/components/trip/SnsShareModal";
 import { OnlineUsers } from "@/components/trip/OnlineUsers";
 import { Modal } from "@/components/ui/Modal";
 import { TreePine, ClipboardList } from "lucide-react";
+
+function getDayPrefecture(day: number, trip: Trip): { prefectureCode: number; subRegion?: string } {
+  const info = trip.dayInfos?.[day - 1];
+  if (info?.prefectureCode) {
+    return { prefectureCode: info.prefectureCode, subRegion: info.subRegion };
+  }
+  return { prefectureCode: trip.prefectureCode, subRegion: trip.subRegion };
+}
 
 export default function TripPage() {
   const params = useParams();
@@ -35,6 +44,7 @@ export default function TripPage() {
   const [showShare, setShowShare] = useState(false);
   const [showSnsShare, setShowSnsShare] = useState(false);
   const [activeTab, setActiveTab] = useState<"timeline" | "packing">("timeline");
+  const [showDayPrefSelector, setShowDayPrefSelector] = useState(false);
 
   const getStorageAdapter = useCallback(() => {
     if (user) return getStorage(createClient());
@@ -49,8 +59,10 @@ export default function TripPage() {
     );
   }
 
-  const prefecture = getPrefecture(trip.prefectureCode, trip.subRegion);
   const days = trip.days || 1;
+  const { prefectureCode: dayPrefCode, subRegion: daySubRegion } = getDayPrefecture(activeDay, trip);
+  const prefecture = getPrefecture(dayPrefCode, daySubRegion);
+  const dayPrefName = prefectures[dayPrefCode]?.name;
 
   if (!prefecture) {
     return (
@@ -59,6 +71,10 @@ export default function TripPage() {
       </div>
     );
   }
+
+  const daySpots = spots.filter(
+    (s) => s.day === activeDay || (!s.day && activeDay === 1)
+  );
 
   const handleSpotClick = (_spot: Spot) => {
     // ピンタップ時は名前表示のみ（PrefectureMap内でラベルトグル）
@@ -103,7 +119,7 @@ export default function TripPage() {
     while (currentInfos.length < day) {
       currentInfos.push({});
     }
-    currentInfos[day - 1] = { label };
+    currentInfos[day - 1] = { ...currentInfos[day - 1], label };
     await getStorageAdapter().updateTrip(tripId, { dayInfos: currentInfos });
     await refresh();
   };
@@ -155,6 +171,25 @@ export default function TripPage() {
     await deleteSpot(spotId);
   };
 
+  const handleChangeDayPrefecture = () => {
+    setShowDayPrefSelector(true);
+  };
+
+  const handleDayPrefectureSelect = async (code: number, subRegion?: string) => {
+    const currentInfos = [...(trip.dayInfos || [])];
+    while (currentInfos.length < activeDay) {
+      currentInfos.push({});
+    }
+    currentInfos[activeDay - 1] = {
+      ...currentInfos[activeDay - 1],
+      prefectureCode: code,
+      subRegion,
+    };
+    await getStorageAdapter().updateTrip(tripId, { dayInfos: currentInfos });
+    await refresh();
+    setShowDayPrefSelector(false);
+  };
+
   const handleEditName = () => {
     setNewName(trip.name);
     setEditingName(true);
@@ -184,7 +219,7 @@ export default function TripPage() {
         <div className="px-2 pt-2 pb-0 flex items-center justify-center bg-cream/50">
           <PrefectureMap
             prefecture={prefecture}
-            spots={spots}
+            spots={daySpots}
             onSpotClick={handleSpotClick}
           />
         </div>
@@ -238,6 +273,8 @@ export default function TripPage() {
                 onAddDay={handleAddDay}
                 onRemoveDay={handleRemoveDay}
                 onUpdateDayLabel={handleUpdateDayLabel}
+                onChangeDayPrefecture={handleChangeDayPrefecture}
+                dayPrefectureName={dayPrefName}
               />
             ) : (
               <PackingList tripId={tripId} />
@@ -270,7 +307,7 @@ export default function TripPage() {
               : undefined
           }
           prefecture={prefecture}
-          prefectureCode={trip.prefectureCode}
+          prefectureCode={dayPrefCode}
           onSubmit={handleSubmitSpot}
           onCancel={() => {
             setShowSpotForm(false);
@@ -321,6 +358,15 @@ export default function TripPage() {
         isOpen={showShare}
         onClose={() => setShowShare(false)}
       />
+
+      {/* Day Prefecture Selector Modal */}
+      <Modal
+        isOpen={showDayPrefSelector}
+        onClose={() => setShowDayPrefSelector(false)}
+        title={`${activeDay}日目のエリアを選択`}
+      >
+        <PrefectureSelector onSelect={handleDayPrefectureSelect} />
+      </Modal>
 
       {/* SNS Share Modal */}
       <SnsShareModal

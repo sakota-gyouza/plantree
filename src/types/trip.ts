@@ -34,6 +34,8 @@ export interface Spot {
 
 export interface DayInfo {
   label?: string; // custom label like "2025/4/10" or null for default "1日目"
+  prefectureCode?: number; // 日ごとの都道府県（未設定ならtrip全体の値）
+  subRegion?: string; // 日ごとのサブリージョン
 }
 
 export interface Trip {

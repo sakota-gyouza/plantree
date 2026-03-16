@@ -18,7 +18,7 @@ import {
   sortableKeyboardCoordinates,
   arrayMove,
 } from "@dnd-kit/sortable";
-import { Plus, X, Calendar, Route } from "lucide-react";
+import { Plus, X, Calendar, Route, MapPin } from "lucide-react";
 import { Spot, DayInfo } from "@/types/trip";
 import { TimelineItem } from "./TimelineItem";
 
@@ -35,6 +35,8 @@ interface TimelineTreeProps {
   onAddDay: () => void;
   onRemoveDay: (day: number) => void;
   onUpdateDayLabel: (day: number, label: string | undefined) => void;
+  onChangeDayPrefecture?: (day: number) => void;
+  dayPrefectureName?: string;
 }
 
 function getDayLabel(day: number, dayInfos?: DayInfo[]): string {
@@ -56,6 +58,8 @@ export function TimelineTree({
   onAddDay,
   onRemoveDay,
   onUpdateDayLabel,
+  onChangeDayPrefecture,
+  dayPrefectureName,
 }: TimelineTreeProps) {
   const [editingDayLabel, setEditingDayLabel] = useState<number | null>(null);
   const [labelInput, setLabelInput] = useState("");
@@ -145,6 +149,16 @@ export function TimelineTree({
           <Calendar size={10} />
           {dayInfos?.[currentDay - 1]?.label ? "日付を変更" : "日付を設定"}
         </button>
+        {onChangeDayPrefecture && (
+          <button
+            onClick={() => onChangeDayPrefecture(currentDay)}
+            className="flex items-center gap-1 text-[10px] text-text-sub hover:text-coral transition-colors"
+            title="エリアを変更"
+          >
+            <MapPin size={10} />
+            {dayPrefectureName || "エリア変更"}
+          </button>
+        )}
         {daySpots.length >= 2 && (
           <button
             onClick={() => setShowDistance((v) => !v)}
