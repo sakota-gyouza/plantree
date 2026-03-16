@@ -169,7 +169,7 @@ export default function TripPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-dvh flex flex-col overflow-hidden">
       <TripHeader
         trip={trip}
         onEditName={handleEditName}
