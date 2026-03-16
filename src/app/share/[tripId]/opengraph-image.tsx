@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { prefectures } from "@/data/prefectures";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const alt = "Plantree - 旅行プラン";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
