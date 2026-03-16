@@ -180,7 +180,7 @@ export default function TripPage() {
 
       <div className="flex-1 flex flex-col min-h-0">
         {/* Map Section */}
-        <div className="px-2 pt-2 pb-1 flex items-center justify-center bg-cream/50 max-h-[35vh] overflow-hidden">
+        <div className="px-2 pt-2 pb-1 flex items-center justify-center bg-cream/50 max-h-[25vh] overflow-hidden">
           <PrefectureMap
             prefecture={prefecture}
             spots={spots}
@@ -215,7 +215,7 @@ export default function TripPage() {
         </div>
 
         {/* Tab content */}
-        <div className="bg-white/50 px-4 py-3 flex-1 min-h-0 overflow-y-auto overscroll-none">
+        <div className="bg-white/50 px-4 pt-3 pb-6 flex-1 min-h-0 overflow-y-auto overscroll-none">
           {activeTab === "timeline" ? (
             <>
               <h2 className="text-sm font-bold text-text-sub mb-2 px-1">
