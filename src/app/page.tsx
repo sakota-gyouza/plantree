@@ -288,7 +288,7 @@ export default function Home() {
             className="relative bg-white text-text rounded-2xl shadow-lg px-4 py-2.5 text-xs font-bold border border-border animate-fade-in"
           >
             ホーム画面に追加するともっと使いやすくなります
-            <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-white border-r border-b border-border rotate-45" />
+            <div className="absolute -bottom-1.5 right-[4.5rem] w-3 h-3 bg-white border-r border-b border-border rotate-45" />
           </button>
         )}
         <div className="flex items-center gap-3">
