@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, Package } from "lucide-react";
 import { usePackingItems } from "@/lib/hooks/usePackingItems";
@@ -10,14 +10,39 @@ interface PackingListProps {
 }
 
 export function PackingList({ tripId }: PackingListProps) {
-  const { items, loading, addItem, toggleItem, deleteItem, checkedCount, totalCount } =
+  const { items, loading, addItem, toggleItem, renameItem, deleteItem, checkedCount, totalCount } =
     usePackingItems(tripId);
   const [newName, setNewName] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
+  const editInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editingId && editInputRef.current) {
+      editInputRef.current.focus();
+    }
+  }, [editingId]);
 
   const handleAdd = async () => {
     if (!newName.trim()) return;
     await addItem(newName.trim());
     setNewName("");
+  };
+
+  const handleStartEdit = (id: string, name: string) => {
+    setEditingId(id);
+    setEditingName(name);
+  };
+
+  const handleFinishEdit = async () => {
+    if (editingId && editingName.trim()) {
+      const item = items.find((i) => i.id === editingId);
+      if (item && item.name !== editingName.trim()) {
+        await renameItem(editingId, editingName.trim());
+      }
+    }
+    setEditingId(null);
+    setEditingName("");
   };
 
   if (loading) {
@@ -95,13 +120,32 @@ export function PackingList({ tripId }: PackingListProps) {
                 >
                   {item.checked && <span className="text-xs">✓</span>}
                 </button>
-                <span
-                  className={`flex-1 text-sm ${
-                    item.checked ? "line-through text-text-sub" : "text-text"
-                  }`}
-                >
-                  {item.name}
-                </span>
+                {editingId === item.id ? (
+                  <input
+                    ref={editInputRef}
+                    type="text"
+                    value={editingName}
+                    onChange={(e) => setEditingName(e.target.value)}
+                    onBlur={handleFinishEdit}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleFinishEdit();
+                      if (e.key === "Escape") {
+                        setEditingId(null);
+                        setEditingName("");
+                      }
+                    }}
+                    className="flex-1 text-sm text-text bg-cream border border-coral rounded-lg px-2 py-0.5 focus:outline-none"
+                  />
+                ) : (
+                  <span
+                    onClick={() => handleStartEdit(item.id, item.name)}
+                    className={`flex-1 text-sm cursor-text ${
+                      item.checked ? "line-through text-text-sub" : "text-text"
+                    }`}
+                  >
+                    {item.name}
+                  </span>
+                )}
                 <button
                   onClick={() => deleteItem(item.id)}
                   className="text-text-sub/40 hover:text-red-400 transition-colors p-1"

@@ -49,6 +49,15 @@ export function usePackingItems(tripId: string) {
     }
   };
 
+  const renameItem = async (itemId: string, name: string) => {
+    try {
+      await getAdapter().updatePackingItem(itemId, { name });
+      await refresh();
+    } catch (err) {
+      console.error("Failed to rename packing item:", err);
+    }
+  };
+
   const deleteItem = async (itemId: string) => {
     try {
       await getAdapter().deletePackingItem(itemId);
@@ -65,6 +74,7 @@ export function usePackingItems(tripId: string) {
     loading,
     addItem,
     toggleItem,
+    renameItem,
     deleteItem,
     checkedCount,
     totalCount: items.length,
