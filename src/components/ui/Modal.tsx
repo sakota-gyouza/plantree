@@ -14,13 +14,15 @@ interface ModalProps {
 
 export function Modal({ isOpen, onClose, children, title, compact }: ModalProps) {
   useEffect(() => {
+    const scrollContainer = document.body.firstElementChild as HTMLElement | null;
+    if (!scrollContainer) return;
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      scrollContainer.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "";
+      scrollContainer.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = "";
+      scrollContainer.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -57,7 +59,7 @@ export function Modal({ isOpen, onClose, children, title, compact }: ModalProps)
                 </button>
               </div>
             )}
-            <div className={compact ? "flex-1 overflow-y-auto p-4" : "flex-1 overflow-y-auto p-5"}>{children}</div>
+            <div className={compact ? "flex-1 overflow-y-auto overscroll-none p-4" : "flex-1 overflow-y-auto overscroll-none p-5"}>{children}</div>
           </motion.div>
         </>
       )}

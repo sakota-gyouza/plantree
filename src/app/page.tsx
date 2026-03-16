@@ -26,6 +26,7 @@ export default function Home() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [feedbackSent, setFeedbackSent] = useState(false);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSelectPrefecture = (code: number, subRegion?: string) => {
@@ -269,17 +270,12 @@ export default function Home() {
       <div className="fixed bottom-6 right-6 flex items-center gap-3">
         <button
           onClick={() => {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (isIOS) {
-              alert("Safari の共有ボタン（□↑）から\n「ホーム画面に追加」を選んでください");
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const evt = (window as any).__deferredInstallPrompt;
+            if (evt) {
+              evt.prompt();
             } else {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const evt = (window as any).__deferredInstallPrompt;
-              if (evt) {
-                evt.prompt();
-              } else {
-                alert("ブラウザのメニューから\n「ホーム画面に追加」を選んでください");
-              }
+              setShowInstallGuide(true);
             }
           }}
           className="w-12 h-12 bg-white text-coral border-2 border-coral rounded-full shadow-lg flex items-center justify-center hover:bg-coral hover:text-white active:scale-90 transition-all"
@@ -333,6 +329,69 @@ export default function Home() {
             </Button>
           </div>
         )}
+      </Modal>
+
+      {/* Install Guide Modal */}
+      <Modal
+        isOpen={showInstallGuide}
+        onClose={() => setShowInstallGuide(false)}
+        title="ホーム画面に追加"
+        compact
+      >
+        <div className="flex flex-col items-center gap-6 py-4">
+          <div className="text-5xl">🌳</div>
+          <p className="text-sm text-text-sub text-center">
+            Plantreeをアプリのように使えます
+          </p>
+
+          {typeof navigator !== "undefined" && /iPad|iPhone|iPod/.test(navigator.userAgent) ? (
+            <div className="w-full flex flex-col gap-4">
+              <div className="flex items-center gap-4 bg-cream rounded-xl p-4">
+                <div className="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center text-coral font-bold shrink-0">1</div>
+                <div>
+                  <p className="text-sm font-bold text-text">共有ボタンをタップ</p>
+                  <p className="text-xs text-text-sub mt-0.5">画面下の <span className="inline-block border border-border rounded px-1.5 py-0.5 text-text font-bold">□↑</span> アイコン</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 bg-cream rounded-xl p-4">
+                <div className="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center text-coral font-bold shrink-0">2</div>
+                <div>
+                  <p className="text-sm font-bold text-text">「ホーム画面に追加」を選択</p>
+                  <p className="text-xs text-text-sub mt-0.5">メニューを下にスクロールしてね</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 bg-cream rounded-xl p-4">
+                <div className="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center text-coral font-bold shrink-0">3</div>
+                <div>
+                  <p className="text-sm font-bold text-text">「追加」をタップして完了!</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full flex flex-col gap-4">
+              <div className="flex items-center gap-4 bg-cream rounded-xl p-4">
+                <div className="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center text-coral font-bold shrink-0">1</div>
+                <div>
+                  <p className="text-sm font-bold text-text">ブラウザのメニューを開く</p>
+                  <p className="text-xs text-text-sub mt-0.5">右上の <span className="inline-block border border-border rounded px-1.5 py-0.5 text-text font-bold">⋮</span> アイコン</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 bg-cream rounded-xl p-4">
+                <div className="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center text-coral font-bold shrink-0">2</div>
+                <div>
+                  <p className="text-sm font-bold text-text">「ホーム画面に追加」を選択</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Button
+            onClick={() => setShowInstallGuide(false)}
+            className="w-full py-3"
+          >
+            OK
+          </Button>
+        </div>
       </Modal>
     </div>
   );
