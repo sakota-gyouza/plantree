@@ -18,6 +18,7 @@ import { ShareModal } from "@/components/trip/ShareModal";
 import { SnsShareModal } from "@/components/trip/SnsShareModal";
 import { OnlineUsers } from "@/components/trip/OnlineUsers";
 import { Modal } from "@/components/ui/Modal";
+import { Loading } from "@/components/ui/Loading";
 import { TreePine, ClipboardList } from "lucide-react";
 
 function getDayPrefecture(day: number, trip: Trip): { prefectureCode: number; subRegion?: string } {
@@ -53,9 +54,7 @@ export default function TripPage() {
 
   if (loading || !trip) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-text-sub">
-        読み込み中...
-      </div>
+      <Loading fullScreen />
     );
   }
 

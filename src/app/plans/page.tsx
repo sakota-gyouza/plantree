@@ -11,6 +11,7 @@ import { Modal } from "@/components/ui/Modal";
 import { PrefectureSelector } from "@/components/prefecture/PrefectureSelector";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Loading } from "@/components/ui/Loading";
 
 export default function PlansPage() {
   const router = useRouter();
@@ -80,7 +81,7 @@ export default function PlansPage() {
 
       {/* Trip List */}
       {loading ? (
-        <div className="text-center py-16 text-text-sub">読み込み中...</div>
+        <Loading />
       ) : trips.length === 0 ? (
         <motion.div
           className="text-center py-16"

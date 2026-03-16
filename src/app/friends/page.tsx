@@ -9,6 +9,7 @@ import { useFriends } from "@/lib/hooks/useFriends";
 import { FriendCard } from "@/components/friends/FriendCard";
 import { FriendSearch } from "@/components/friends/FriendSearch";
 import { LoginButton } from "@/components/auth/LoginButton";
+import { Loading } from "@/components/ui/Loading";
 
 type Tab = "friends" | "requests" | "search";
 
@@ -145,7 +146,7 @@ export default function FriendsPage() {
               className="flex flex-col gap-2"
             >
               {loading ? (
-                <p className="text-center text-text-sub py-8">読み込み中...</p>
+                <Loading />
               ) : friends.length === 0 ? (
                 <div className="flex flex-col items-center gap-3 py-12">
                   <UserPlus size={40} className="text-text-sub/30" />

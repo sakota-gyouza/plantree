@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, Package } from "lucide-react";
 import { usePackingItems } from "@/lib/hooks/usePackingItems";
+import { Loading } from "@/components/ui/Loading";
 
 interface PackingListProps {
   tripId: string;
@@ -47,7 +48,7 @@ export function PackingList({ tripId }: PackingListProps) {
 
   if (loading) {
     return (
-      <div className="text-center text-text-sub py-8">読み込み中...</div>
+      <Loading />
     );
   }
 

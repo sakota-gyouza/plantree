@@ -8,6 +8,7 @@ import { FriendService } from "@/lib/services/friendService";
 import { createClient } from "@/lib/supabase/client";
 import { Profile } from "@/types/friend";
 import { Modal } from "@/components/ui/Modal";
+import { Loading } from "@/components/ui/Loading";
 
 interface ShareModalProps {
   tripId: string;
@@ -87,9 +88,7 @@ export function ShareModal({ tripId, isOpen, onClose }: ShareModalProps) {
             フレンドを招待
           </h3>
           {loadingFriends ? (
-            <p className="text-center text-text-sub text-sm py-4">
-              読み込み中...
-            </p>
+            <Loading />
           ) : availableFriends.length === 0 ? (
             <p className="text-center text-text-sub text-sm py-4">
               {friendProfiles.length === 0
